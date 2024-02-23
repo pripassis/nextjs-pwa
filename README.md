@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Step 1: Initialize a Next.js Project
 
-## Getting Started
-
-First, run the development server:
+Primeiro, vamos criar um novo projeto Next.js usando o seguinte comando:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx create-next-app nextjs-with-pwa --typescript
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Em seguida, navegue até a nova pasta do projeto e instale as dependências:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cd nextjs-with-pwa
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Step 2: Add necessary module
 
-## Learn More
+Para adicionar recursos PWA ao nosso aplicativo Next.js, usaremos o pacote next-pwa:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm i next-pwa
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Step 3: Configure Next.js PWA
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Configure o arquivo next.config.js na raiz do seu projeto com o seguinte conteúdo:
 
-## Deploy on Vercel
+```js
+const withPWA = require("next-pwa")({
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === "development",
+});
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+};
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+module.exports = withPWA(nextConfig);
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Esta configuração diz ao next-pwa para gerar o service worker necessário e armazená-lo na pasta pública.
+
+Se você usar git para gerenciar o código-fonte, será necessário adicionar as regras abaixo no arquivo .gitignore:
+
+- public/sw.js
+- public/workbox-\*
+
+## Step 4: Create the Manifest File
+
+Crie um novo arquivo chamado manifest.json dentro da pasta pública:
+
+```json
+{
+  "name": "Next.js PWA Demo",
+  "short_name": "PWADemo",
+  "description": "A Progressive Web App built with Next.js",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+```
+
+Adicione os ícones PWA (icon-192x192.png e icon-512x512.png) à pasta pública. Esses ícones serão exibidos quando os usuários instalarem seu PWA.
+
+Você pode encontrar ícones em https://www.iconarchive.com e tentar selecionar um ícone de tamanho 512px.
+
+## Step 5: Test the PWA Locally
+
+Depois de concluir todos os itens acima, podemos testá-lo localmente. Para testar o PWA localmente, vamos primeiro criar uma nova compilação e depois iniciar um servidor localmente:
+
+```bash
+npm run build
+npm run start
+```
+
+Visite http://localhost:3000 , você pode ver um ícone instalável no canto direito da localização do URL. Clique no ícone para instalar localmente e você pode iniciar o site no Launchpad na plataforma MacOS.
