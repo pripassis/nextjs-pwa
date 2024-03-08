@@ -1,5 +1,6 @@
 "use client";
 import { Post } from "@/api/api";
+import Card from "@/components/Card";
 import { Item } from "@/models/post.interface";
 import { useEffect, useState } from "react";
 
@@ -10,7 +11,7 @@ export default function Home() {
 
   //add
   useEffect(() => {
-    Post.getNoticia()
+    Post.getNoticia({ de: "03-01-2024" })
       .then((data) => {
         setPosts(data.items);
       })
@@ -21,9 +22,9 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex">
+    <div className="flex flex-1">
       <div>
-        <div className="mt-5 mx-auto w-auto">
+        <div className="mt-5">
           {/* Modify this section */}
           {isError ? (
             <div className="mt-1 font-bold text-xl text-red-500">
@@ -31,13 +32,13 @@ export default function Home() {
             </div>
           ) : (
             posts.map((post) => (
-              <div
-                className="flex flex-col mb-3 border rounded m-3 py-2 px-4"
-                key={post.id}
-              >
-                <h1 className="flex-1 text-2xl">{post.titulo}</h1>
-                <div className="flex">{post.introducao}</div>
-              </div>
+              <Card
+                id={post.id + ""}
+                imagens={post.imagens}
+                introducao={post.introducao}
+                link={post.link}
+                titulo={post.titulo}
+              />
             ))
           )}
         </div>
